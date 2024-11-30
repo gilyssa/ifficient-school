@@ -1,44 +1,75 @@
+using ifficient_school.src.Infrastructure.Repositories;
+using ifficient_school.src.Application.Interfaces;
+using ifficient_school.src.Application.UseCases;
+using System.Net;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Configuração explícita da porta
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Listen(IPAddress.Any, 80); 
+});
+
+// Registra o caminho do arquivo e o repositório de alunos
+builder.Services.AddSingleton<IStudentRepository>(provider =>
+{
+    var filePath = Path.Combine(AppContext.BaseDirectory, "Data", "students.csv");
+    return new StudentRepository(filePath);
+});
+
+// Registra os casos de uso
+builder.Services.AddTransient<GetApprovedAndFailedStudents>();
+builder.Services.AddTransient<GetBestStudentBySubject>();
+builder.Services.AddTransient<GetStudentByRegistration>();
+builder.Services.AddTransient<GetSortStudentsByAverage>();
+builder.Services.AddTransient<GetAllStudents>();
+
+
+// Adiciona os controladores
+builder.Services.AddControllers();
+
+// Adiciona o Swagger
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen(); 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseSwagger(); 
+app.UseSwaggerUI(c => 
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"); 
+    c.RoutePrefix = string.Empty; 
+});
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.Use(async (context, next) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro: {ex.Message}");
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+
+        await context.Response.WriteAsJsonAsync(new
+        {
+            message = "An unexpected error occurred. Please try again later.",
+            error = ex.Message, // Remova essa linha em produção se não quiser expor detalhes
+        });
+    }
+});
+
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
