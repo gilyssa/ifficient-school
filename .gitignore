@@ -1,0 +1,83 @@
+## .NET Core
+# Build Folders (bin/obj)
+bin/
+obj/
+
+# .vs folder (Visual Studio)
+.vs/
+.vscode/
+
+# User-specific files
+.idea/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer files (compiled)
+*.exe
+*.dll
+*.pdb
+*.app
+*.appx
+*.appxbundle
+
+# Windows Installer logs
+*.cab
+*.log
+
+# Windows specific files
+Thumbs.db
+Desktop.ini
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# VS for Mac
+.vscode/
+
+# Rider
+.idea/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.suo
+*.vssscc
+
+# .NET Core global tools
+tools/
+
+# Windows Installer and other compiled files
+*.msi
+*.cab
+
+# File created by Visual Studio for Mac
+.vscode/
+
+# User-specific files
+*.user
+
+# Rider
+.idea/
+
+# Ignore JetBrains Rider
+.idea/
+
+# npm packages
+node_modules/
+
+# Yarn PNP
+.pnp.*
+
+# Ignore arquivos de configuração sensíveis
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
