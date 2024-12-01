@@ -1,6 +1,0 @@
-@ifficient_school_HostAddress = http://localhost:5074
-
-GET {{ifficient_school_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
