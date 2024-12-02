@@ -24,6 +24,17 @@ builder.Services.AddSingleton<IStudentRepository>(provider =>
     return new StudentRepository(filePath);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowLocalhost3000",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+        }
+    );
+});
+
 builder.Services.AddTransient<GetApprovedAndFailedStudents>();
 builder.Services.AddTransient<GetBestStudentBySubject>();
 builder.Services.AddTransient<GetStudentByRegistration>();
@@ -39,6 +50,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseCors("AllowLocalhost3000");
 
 if (app.Environment.IsDevelopment())
 {
