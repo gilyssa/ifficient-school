@@ -39,7 +39,7 @@ namespace ifficient_school.src.Application.UseCases
 
             var studentsWithLowerOrEqualAverage = students
                 .Skip(1)
-                .Where(student => student.Grades.Values.Average() > pivotAverage);
+                .Where(student => student.Grades.Values.Average() <= pivotAverage);
 
             var studentsWithHigherAverage = students
                 .Skip(1)
